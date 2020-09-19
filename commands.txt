@@ -1,0 +1,235 @@
+Basic Commands:
+===============
+pwd
+cd ~    OR    cd                                        // go to home directory 
+cd ..                                                   // go to directory before/above the current one 
+tab to autocomplete 
+rm -rf <directory_name>
+ls 
+    -t                                                  // sort by modification time
+    -S                                                  // sort by size
+    -r                                                  // reverse order
+    -h                                                  // human readable sizes 
+    -l                                                  // long list
+
+Vim:
+	i                                                     // edit/insert
+	Esc
+	:wq                                                   // save and quit
+	:q!                                                   // discard changes and quit
+
+Wildcard (*)
+	ls *txt                                               // list all files that end with txt
+	ls t*                                                 // list all files that start with t     (doesn't work for directories?)
+	
+Displaying File:
+	cat test.txt
+	less 
+	head                                                  // first 10 lines of the file
+	tail                                                  // last 10 lines of file
+	tail -n 3 test.txt                                    // last 3 lines of file
+	
+Other Stuff:
+	cp <source> <destination>
+	-r                                                    // recursive
+	-f                                                    // force system to overwrite file
+           cp test1.txt test2.txt                       // creates a copy of test1.txt (in same directory) and re-names it test2.txt
+           cp -r new_dir1 new_dir2                      // creates a copy of a folder and everything in it (in same directory) and re-names it new_dir2
+	mv test.txt new_dir                                   // moves test.txt into new_dir directory
+	mv test.txt test1.txt                                 // renames test.txt to test1.txt
+	mv test.txt ..                                        // moves test.txt to directory up
+	mv f* new/                                            // moves all the files that start with f to directory new
+	
+	wc test.txt                                           // tells you number of lines, words, and characters/bytes in file
+	ls | wc -l                                            // (pipeline means use output of first thing as input for second thing) counts number of files and directories in the current directory
+	cat <file1> <file2>                                   // print out one after the other 
+	
+Symbolic Links: someone shares data with you
+	ln -s <original_file> <link_name>                     // need to use absolute path
+	ln -s /u/home/j/jlstaige/test/test.txt ./             //  ./ at the end since not changing the name
+	ls -l
+	ln -s $PWD/ press tab
+	// can apply normal commands to the link
+	// don't modify the original file through the link! 
+	
+Backup:
+	tar -czf new.tgz directory/
+	
+Remote Coping: scp
+	scp <localFile> <username>@hoffman2.idre.ucla.edu:<path>            // transfer file from your local machine (in current dir) to the cluster
+	scp <localFile> <username>@hoffman2.idre.ucla.edu:~
+	scp <username>@hoffman2.idre.ucla.edu:<path>/<remoteFile> ./        // get remote file from cluster and put in current directory
+
+Modify Your Linux Environment:
+// Add prompted confirmation before any existing file is deleted or overwritten
+	cp -i
+	mv -i
+	rm -I
+	e.g. mv -i test.txt test2.txt                                       // asks you if you're SURE you want to override file
+	E.g. Rm -I …
+	
+	alias cp='cp -i'                                                    // put these 3 lines at end of file
+	alias sv='mv -i'
+	alias rs='rm -i'
+	
+Permissions:
+	ls -l
+		-rw-r--r--  orange = you, green = group, blue = others
+	r              // read only
+	w             // write
+	x               // execute
+	chmod <user/group/others/all> +- <permission_level> <file>
+		E.g. chmod u+x test.txt
+	chmod g+w test.txt                                                  // grant your group permission to write
+	
+Redirection:
+	program > output.txt                                                // overwrite file
+	program < input.txt                                                 // provide input from file to program
+	program >> file.txt                                                 // append to end of file
+	
+Pipeline:
+	program_a | program_b
+	program_a > data.txt                                                // program_a's output becomes program_b's input
+	program_b < data.txt
+	
+	wc test.txt > num_stuff.txt                                         // saves the output of command wc test.txt in new file num_stuff.txt
+	
+Find:
+	find <directory> -name <file.txt> -type f -print
+	
+Grep:
+	-v                                                                  // lines not containing the selected string
+	-n                                                                  // line numbers where the string occurs
+	-c                                                                  // number of lines containing string
+	-l                                                                  // filenames where string occurs
+	-i                                                                  // makes match case-insensitive 
+	grep "1" test.txt                                                   // prints lines that contain string "1" in file test.txt
+	grep "chr2" hg19.gtf > chr2.txt                                     // chr2, chr21, etc.
+	grep "chr2\s" hg19.gtf > chr2.txt
+
+Regex:
+	.                                                                   // any character, but only ONE character
+	*                                                                   // 0 or more occurrences of preceding letter
+	abc*                                                                // matches with ab, abc, abcc, abccc, …
+	(abc)*                                                              // matches with -, abc, abcabc, abcabcabc, …
+	(abc){2,3}                                                          // matches abcabc or abcabcabc only
+	[eor]                                                               // choose any of these
+		E.g. b[eor]at : beat, brat, boat
+	[^eo]                                                               // characters we don't want to see (negated)
+		E.g. b[^eo]at
+	grep "b[eor]at" regex.txt
+	[a-e]                                                               // = [abcde]
+	[1-9]                                                               // = [123456789]
+	[a-e1-9]                                                            // = [abcde123456789]
+	[[:digit:]]                                                         // any digits from 0-9
+	[[:alpha:]]                                                         // any alphabetic char  
+	[[:alnum:]]                                                         // any alphanumeric char
+	Anchors:
+		^                                                                 // at beginning of line (e.g. ^b[eor]at)
+		$                                                                 // at end of line
+		^word$                                                            // only one word on line
+		^$                                                                // emptyline (use to find all empty lines in file)
+	Advanced:
+		?                                                                 // 0 or 1 occurrences 
+		+                                                                 // 1 or more occurrence of previous char
+		{x}                                                               // x instance of…
+		grep -E "a1|b1" regex.txt    // find a1 OR b1, = "[ab]1" …
+	Special Characters:
+		\s                                                                // space
+		\t                                                                // tab
+		\s+                                                               // many spaces
+		\t\t                                                              // 2 adjacent tabs
+		
+Sed: Stream Editor 
+==================
+// (edit file, but don't open it since it's too big), doesn't edit original file -> gives you a new version that you can redirect and save or print out
+	sed [options] commands <file_to_edit>
+	sed 's/old_word/new_word/' file.txt                                 // s means replace old word with second (only works once unless global)
+	sed 's/bee/be/g' file.txt                                           // will replace ALL the bees in that line with be
+	sed 's/<pattern>/(&)/' file.txt                                     // put () around it
+	sed '3d' file.txt                                                   // deletes 3rd line
+	sed '/awk/d' file.txt                                               // delete all lines containing awk
+	sed '$d' file.txt                                                   // remove last line
+	
+	
+	…
+	…
+	
+Qsub:
+=====
+	qsub -cwd -V -N <name_of_process> -l                                // if you don't give it a name, will assign it a number
+	h_data=<MEM_NEEDED>, time=24:00:00 run.sh                           // usually between 4 GB - 32 GB (highest: 64), 24 hours max 
+	qsub -cwd -V -N test -l h_data=1G, time=1:00:00 run.sh
+	myjobs                                                              // same as below
+	qstat | grep <username>                                             // displays all jobs running on hoffman2 of yours
+	qstat -u <username>                                                 // same as above
+	qw                                                                  // means still in queue
+	r                                                                   // running
+	ls -l <name_of_process>.*                                           // see all your files
+	qacct -j <job_id> | less -S                                         // check how much memory one of your jobs used up
+	
+	
+	
+	
+History | grep awk
+History>history_w1.txt
+Grep "awk" history_w1.txt
+
+
+How to Download/Install Python in Linux:
+========================================
+1. Visit Anaconda.com/downloads and select Linux
+2. Copy the bash (.sh file) installer link (right click on "64-bit…" and then click "Copy Link Address")
+3. Make a new directory to put it in if you want
+4. Use wget to download the bash installer: 
+5. wget <PASTE_LINK_YOU_COPIED_HERE>
+6. Run the bash script to install Anaconda3
+bash Anaconda3-5.2.0-Linux-x86_64.sh
+7. source the .bash-rc file to add Anaconda to your PATH
+cd ~ 
+source .bashrc
+python
+exit
+
+
+Miscellaneous: 
+tar xjvf LDREF.tar.bz2      // this creates a directory called LDREF and puts all the plink files in the new LDREF directory
+
+Loading Modules:
+module load python/2.7.3                                          
+
+Starting R:
+. /u/local/Modules/default/init/modules.sh
+module load R/3.6.1
+R
+
+Clone GitHub Repository:
+=========================
+cd <dir>
+git init
+git clone <website_address>     // (or copy HTTPS link)
+
+Running scripts in ANY directory:  (From <https://unix.stackexchange.com/questions/239986/how-to-execute-a-shell-script-from-any-directory>)
+=================================
+mkdir ~/bin
+mv ~/*.sh ~/bin                                                       // move the shell script you want to execute into bin directory under home 
+chmod +x ~/bin/*
+if ! grep 'PATH=.*HOME/bin' ~/.profile
+then
+    echo 'export PATH="$HOME/bin:$PATH"' >> ~/.profile
+fi                                                                    // copy and paste this into HOME directory in order to access ~/.profile
+. ~/.profile
+echo "$PATH"                                                          // you should see your bin directory
+// cd into new directory and see if it works                          // e.g. <SCRIPT_NAME>.sh
+
+How to Open a pdf in Linux:
+===========================
+export $(dbus-launch)
+xdg-open <FILE.pdf>  // opens in firefox 
+Scp to desktop
+
+Gzipped Stuff:
+==============
+gunzip -c step1_chr18.info.gz | awk 'NR==1, NR==10 {print $0}'
+zcat <file.gz>  // print out contents of a gzipped file
+gzip <file.txt> // gzip a file
